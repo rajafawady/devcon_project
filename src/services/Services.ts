@@ -148,12 +148,13 @@ export const PerformanceService = {
 // Scoring System
 export const ScoringService = {
   async submitScore(data: Omit<Score, 'id' | 'submittedAt'>): Promise<string> {
+    console.log(data);
     const scoreId = await addDocument('scores', {
       ...data,
       submittedAt: serverTimestamp()
     });
 
-    await PerformanceService.updateStatus(data.performanceId, 'scored');
+    // await PerformanceService.updateStatus(data.performanceId, 'scored');
     return scoreId;
   },
 

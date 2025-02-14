@@ -50,7 +50,15 @@ export default function Page(props: pageProps) {
           columns={[
             {
               accessorKey: 'name',
-              header: 'NAME'
+              header: 'NAME',
+              cell: ({ row }: { row: any }) => (
+                <Link
+                  href={`/dashboard/rounds/${row.original.id}`}
+                  className='text-blue-500 hover:underline'
+                >
+                  {row.original.name}
+                </Link>
+              )
             },
             {
               accessorKey: 'description',

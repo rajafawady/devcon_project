@@ -147,7 +147,7 @@ const JudgeScoringPanel = () => {
       </Card>
 
       {/* Leaderboard */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Contestant Rankings</CardTitle>
         </CardHeader>
@@ -181,7 +181,7 @@ const JudgeScoringPanel = () => {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 };
