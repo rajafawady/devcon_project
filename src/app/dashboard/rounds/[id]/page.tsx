@@ -134,13 +134,10 @@ const VotingInterface = () => {
           <Card key={performance.id} className='overflow-hidden'>
             <div className='grid gap-4 md:grid-cols-3'>
               <div className='relative'>
-                <img
-                  src={performance.mediaUrl}
-                  alt={`${performance.artist}'s performance`}
-                  className='h-full w-full object-cover'
-                />
-
-                <PlayCircle className='absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 transform cursor-pointer text-white opacity-75 hover:opacity-100' />
+                <video controls className='w-full max-w-3xl rounded-lg'>
+                  <source src={performance.mediaUrl} type='video/mp4' />
+                  Your browser does not support the video tag.
+                </video>
               </div>
 
               <div className='p-4 md:col-span-2'>
@@ -179,7 +176,7 @@ const VotingInterface = () => {
         ))}
       </div>
 
-      <div className='grid gap-6'>
+      {/* <div className='grid gap-6'>
         {contestants.map((contestant) => (
           <Card key={contestant.id} className='overflow-hidden'>
             <div className='grid gap-4 md:grid-cols-3'>
@@ -239,7 +236,7 @@ const VotingInterface = () => {
             </div>
           </Card>
         ))}
-      </div>
+      </div> */}
 
       {/* Vote History Modal */}
       {showVoteHistory && (
