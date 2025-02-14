@@ -179,7 +179,7 @@ const VotingInterface = () => {
         ))}
       </div>
 
-      {/* <div className='grid gap-6'>
+      <div className='grid gap-6'>
         {contestants.map((contestant) => (
           <Card key={contestant.id} className='overflow-hidden'>
             <div className='grid gap-4 md:grid-cols-3'>
@@ -239,7 +239,7 @@ const VotingInterface = () => {
             </div>
           </Card>
         ))}
-      </div> */}
+      </div>
 
       {/* Vote History Modal */}
       {showVoteHistory && (

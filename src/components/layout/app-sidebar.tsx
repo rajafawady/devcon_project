@@ -48,7 +48,7 @@ import { Icons } from '../icons';
 import { useAuth } from '@/hooks/auth-context';
 
 export const company = {
-  name: 'Acme Inc',
+  name: 'Devcon Project',
   logo: GalleryVerticalEnd,
   plan: 'Enterprise'
 };

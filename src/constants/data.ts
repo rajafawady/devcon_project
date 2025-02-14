@@ -15,7 +15,7 @@ export type Product = {
 export const navItems: NavItem[] = [
   {
     title: 'Dashboard',
-    url: '/dashboard/overview',
+    url: '/dashboard/rounds',
     icon: 'dashboard',
     isActive: false,
     shortcut: ['d', 'd'],
@@ -29,6 +29,22 @@ export const navItems: NavItem[] = [
     isActive: false,
     items: [] // No child items
   },
+  {
+    title: 'Competitions',
+    url: '/dashboard/competition-rounds',
+    icon: 'post'
+  },
+  {
+    title: 'Judge Rating',
+    url: '/dashboard/judge-scoring',
+    icon: 'ellipsis'
+  },
+
+  {
+    title: 'Performances',
+    url: '/dashboard/rounds/1'
+  },
+
   {
     title: 'Account',
     url: '#', // Placeholder as there is no direct link for the parent
