@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 // import { auth, googleProvider } from '@/lib/firebaseConfig';
+import Link from 'next/link';
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
@@ -138,9 +139,9 @@ export default function SignupPage() {
 
           <p className='mt-2 text-center text-sm text-gray-500'>
             Already have an account?{' '}
-            <a href='/' className='text-blue-600'>
+            <Link href='/' className='text-blue-600'>
               Sign In
-            </a>
+            </Link>
           </p>
         </CardContent>
       </Card>
