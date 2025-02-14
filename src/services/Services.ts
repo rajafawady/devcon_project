@@ -30,6 +30,10 @@ export const ContestantService = {
     const data = await getDocument('contestants', id);
     return data ? (data as Contestant) : null;
   },
+  async getContestants(): Promise<Contestant[]> {
+    const docs = await getCollection('contestants');
+    return docs.map((doc) => doc as Contestant);
+  },
 
   async updateProfile(id: string, data: Partial<Contestant>): Promise<void> {
     return updateDocument('contestants', id, data);
@@ -69,6 +73,10 @@ export const RoundService = {
     return doc ? (doc as Round) : null;
   },
 
+  async getRounds(): Promise<Round[]> {
+    const docs = await getCollection('rounds');
+    return docs.map((doc) => doc as Round);
+  },
   async updateRound(id: string, data: Partial<Round>): Promise<void> {
     return updateDocument('rounds', id, data);
   },
@@ -140,12 +148,13 @@ export const PerformanceService = {
 // Scoring System
 export const ScoringService = {
   async submitScore(data: Omit<Score, 'id' | 'submittedAt'>): Promise<string> {
+    console.log(data);
     const scoreId = await addDocument('scores', {
       ...data,
       submittedAt: serverTimestamp()
     });
 
-    await PerformanceService.updateStatus(data.performanceId, 'scored');
+    // await PerformanceService.updateStatus(data.performanceId, 'scored');
     return scoreId;
   },
 

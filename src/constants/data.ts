@@ -23,7 +23,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Rounds',
-    url: '/dashboard/round',
+    url: '/dashboard/rounds',
     icon: 'product',
     shortcut: ['p', 'p'],
     isActive: false,
@@ -49,14 +49,6 @@ export const navItems: NavItem[] = [
         icon: 'login'
       }
     ]
-  },
-  {
-    title: 'Kanban',
-    url: '/dashboard/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [] // No child items
   }
 ];
 
