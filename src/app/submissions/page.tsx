@@ -265,7 +265,7 @@ export default function PerformanceSubmission() {
       {/* Submissions List */}
       <div className='space-y-4'>
         <h2 className='mb-4 text-xl font-semibold'>Your Submissions</h2>
-        <div className='grid gap-6'>
+        <div className='grid max-h-96 gap-6 overflow-y-auto'>
           {performances.map((performance) => (
             <div
               key={performance.id}
