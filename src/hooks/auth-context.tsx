@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const currentUser = auth.currentUser;
     if (currentUser) {
       setUser(currentUser);
-      // fetchUserProfile(currentUser); // Fetch profile if the user is authenticated
+      fetchUserProfile(currentUser); // Fetch profile if the user is authenticated
     }
 
     // Listen for auth state changes
@@ -48,14 +48,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  // const fetchUserProfile = async (user: User) => {
-  //   try {
-  //     const authService = AuthService
-  //     const profile = await
-  //   } catch (error) {
-  //     console.error('Failed to fetch user profile:', error);
-  //   }
-  // };
+  const fetchUserProfile = async (user: User) => {
+    try {
+      const authService = AuthService;
+      const profile = await authService.getUserProfile(user.uid);
+      setUserProfile(profile);
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+    }
+  };
 
   return (
     <AuthContext.Provider value={{ user, userProfile, loading }}>

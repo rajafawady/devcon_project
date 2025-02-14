@@ -9,9 +9,9 @@ import {
   type UserCredential
 } from 'firebase/auth';
 import { getFirebaseAuth } from '@/lib/firebase/config';
-import { addDocument } from '@/lib/firebase/db';
+import { addDocument, getDocument } from '@/lib/firebase/db';
 import { User } from '@/types/types';
-import { doc, getDoc } from 'firebase/firestore';
+import { ContestantService } from './Services';
 
 export interface AuthUser {
   uid: string;
@@ -75,6 +75,16 @@ export const AuthService = {
     // Save user data to Firestore
     await addDocument('users', userData, result.user.uid);
 
+    if (role === 'contestant') {
+      await ContestantService.register({
+        userId: result.user.uid,
+        name: displayName,
+        email,
+        songPreferences: [],
+        profile: {}
+      });
+    }
+
     return userData;
   },
 
@@ -107,5 +117,19 @@ export const AuthService = {
     );
 
     return authUser;
+  },
+  async getUserProfile(uid: string): Promise<User | null> {
+    const userDoc = (await getDocument('users', uid)) as User;
+    if (!userDoc) return null;
+
+    return {
+      id: userDoc.id,
+      email: userDoc.email,
+      displayName: userDoc.displayName,
+      photoURL: userDoc.photoURL || '',
+      role: userDoc.role,
+      createdAt: userDoc.createdAt,
+      lastLogin: userDoc.lastLogin
+    } as User;
   }
 };

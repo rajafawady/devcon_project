@@ -8,7 +8,7 @@ interface Props {
   user: User;
 }
 
-export const ContestantProfileManager: React.FC<Props> = () => {
+export const ContestantProfileManager: React.FC<Props> = ({ user }) => {
   const [contestant, setContestant] = useState<Contestant | null>(null);
   const [performances, setPerformances] = useState<Performance[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,12 +16,12 @@ export const ContestantProfileManager: React.FC<Props> = () => {
 
   useEffect(() => {
     loadContestantData();
-  }, []);
+  }, [user.id]);
 
   const loadContestantData = async () => {
     try {
       setLoading(true);
-      const contestantData = await ContestantService.getContestant('fawad');
+      const contestantData = await ContestantService.getContestant(user.id);
       if (contestantData) {
         setContestant(contestantData);
         // Load contestant's performances
