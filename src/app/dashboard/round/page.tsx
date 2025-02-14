@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,6 +19,8 @@ import {
   PopoverContent
 } from '@/components/ui/popover';
 import { toast } from 'sonner';
+import { RoundService, ContestantService } from '@/services/Services';
+import { MultiSelect } from '@/components/ui/multi-select';
 
 // Firestore reference
 const db = getFirestore();
@@ -26,10 +28,9 @@ const db = getFirestore();
 const roundSchema = z.object({
   name: z.string().min(3, 'Round name is required'),
   description: z.string().optional(),
-  startDate: z.date(),
-  endDate: z.date(),
   maxContestants: z.number().min(1, 'Must allow at least one contestant'),
-  votingEnabled: z.boolean()
+  votingEnabled: z.boolean(),
+  assignedContestants: z.array(z.string())
 });
 
 type RoundFormData = z.infer<typeof roundSchema>;
@@ -46,7 +47,17 @@ export default function CompetitionRoundForm() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [contestants, setContestants] = useState<
+    { id: string; name: string }[]
+  >([]);
 
+  useEffect(() => {
+    async function fetchContestants() {
+      const contestants = await ContestantService.getContestants();
+      setContestants(contestants.map((c) => ({ id: c.id, name: c.name })));
+    }
+    fetchContestants();
+  }, []);
   const onSubmit = async (data: RoundFormData) => {
     setLoading(true);
     try {
@@ -60,12 +71,10 @@ export default function CompetitionRoundForm() {
         createdAt: new Date(),
         createdBy: user.uid,
         status: 'upcoming',
-        judgeIds: [],
-        votingStartDate: data.votingEnabled ? new Date() : null,
-        votingEndDate: data.votingEnabled ? new Date() : null
+        judgeIds: []
       };
 
-      await addDoc(collection(db, 'competitionRounds'), roundData);
+      await RoundService.createRound(roundData as any);
       toast.success('Competition round created successfully!');
     } catch (error: any) {
       toast.error('Error creating round: ' + error.message);
@@ -86,37 +95,15 @@ export default function CompetitionRoundForm() {
           {...register('description')}
         />
 
-        {/* Date Pickers */}
-        <div className='flex gap-4'>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant='outline'>
-                <CalendarIcon className='mr-2 h-4 w-4' />
-                {watch('startDate')
-                  ? format(watch('startDate'), 'PPP')
-                  : 'Pick Start Date'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-auto p-0'>
-              {/* <Calendar
-              <Calendar onSelect={(date) => setValue("startDate", date as Date)} /> */}
-            </PopoverContent>
-          </Popover>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant='outline'>
-                <CalendarIcon className='mr-2 h-4 w-4' />
-                {watch('endDate')
-                  ? format(watch('endDate'), 'PPP')
-                  : 'Pick End Date'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-auto p-0'>
-              {/* <Calendar onSelect={(date) => setValue("endDate", date as Date)} /> */}
-            </PopoverContent>
-          </Popover>
-        </div>
+        <MultiSelect
+          options={contestants}
+          selected={watch('assignedContestants') || []}
+          onChange={(selected) => setValue('assignedContestants', selected)}
+          placeholder='Select Contestants'
+        />
+        {errors.assignedContestants && (
+          <p className='text-red-500'>{errors.assignedContestants.message}</p>
+        )}
 
         <Input
           type='number'
@@ -126,6 +113,8 @@ export default function CompetitionRoundForm() {
         {errors.maxContestants && (
           <p className='text-red-500'>{errors.maxContestants.message}</p>
         )}
+
+        {/* assign contestants */}
 
         <div className='flex items-center space-x-2'>
           <input type='checkbox' {...register('votingEnabled')} />
