@@ -4,11 +4,10 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { initializeFirebase, getFirebaseAuth } from '@/lib/firebase/config';
 import { AuthService } from '@/services/AuthService';
-import { IUserProfile } from '@/types/auth.types';
 
 type AuthContextType = {
   user: User | null;
-  userProfile: IUserProfile | null;
+  userProfile: any | null;
   loading: boolean;
 };
 
@@ -20,7 +19,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<IUserProfile | null>(null);
+  const [userProfile, setUserProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,14 +30,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const currentUser = auth.currentUser;
     if (currentUser) {
       setUser(currentUser);
-      fetchUserProfile(currentUser); // Fetch profile if the user is authenticated
+      // fetchUserProfile(currentUser); // Fetch profile if the user is authenticated
     }
 
     // Listen for auth state changes
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       setUser(user);
       if (user) {
-        await fetchUserProfile(user);
+        // await fetchUserProfile(user);
       } else {
         setUserProfile(null); // Clear profile when user logs out
       }
@@ -49,15 +48,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const fetchUserProfile = async (user: User) => {
-    try {
-      const authService = new AuthService();
-      const profile = await authService.getUserProfile(user.uid);
-      setUserProfile(profile);
-    } catch (error) {
-      console.error('Failed to fetch user profile:', error);
-    }
-  };
+  // const fetchUserProfile = async (user: User) => {
+  //   try {
+  //     const authService = AuthService
+  //     const profile = await
+  //   } catch (error) {
+  //     console.error('Failed to fetch user profile:', error);
+  //   }
+  // };
 
   return (
     <AuthContext.Provider value={{ user, userProfile, loading }}>
