@@ -74,7 +74,7 @@ function RoundCard({ round }: { round: Round }) {
   };
 
   return (
-    <Card className='transition-shadow duration-200 hover:shadow-lg'>
+    <Card className='w-full transition-shadow duration-200 hover:shadow-lg'>
       <CardHeader>
         <div className='flex items-start justify-between'>
           <div>
@@ -149,39 +149,41 @@ export default function CompetitionRounds() {
   };
 
   return (
-    <div className='mx-auto p-6'>
-      <div className='mb-8'>
-        <h1 className='mb-2 text-3xl font-bold'>Competition Rounds</h1>
-        <p className='text-gray-600'>
-          View and participate in competition rounds
-        </p>
+    <div className='h-screen w-full overflow-y-auto'>
+      <div className='w-full p-6'>
+        <div className='mb-8'>
+          <h1 className='mb-2 text-3xl font-bold'>Competition Rounds</h1>
+          <p className='text-gray-600'>
+            View and participate in competition rounds
+          </p>
+        </div>
+
+        <Tabs defaultValue='active' className='space-y-6'>
+          <TabsList className='grid w-full grid-cols-3'>
+            <TabsTrigger value='active'>Active</TabsTrigger>
+            <TabsTrigger value='upcoming'>Upcoming</TabsTrigger>
+            <TabsTrigger value='completed'>Completed</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value='active' className='space-y-6'>
+            {filterRounds('upcoming').map((round) => (
+              <RoundCard key={round.id} round={round} />
+            ))}
+          </TabsContent>
+
+          <TabsContent value='upcoming' className='space-y-6'>
+            {filterRounds('upcoming').map((round) => (
+              <RoundCard key={round.id} round={round} />
+            ))}
+          </TabsContent>
+
+          <TabsContent value='completed' className='space-y-6'>
+            {filterRounds('completed').map((round) => (
+              <RoundCard key={round.id} round={round} />
+            ))}
+          </TabsContent>
+        </Tabs>
       </div>
-
-      <Tabs defaultValue='active' className='space-y-6'>
-        <TabsList className='grid w-full grid-cols-3'>
-          <TabsTrigger value='active'>Active</TabsTrigger>
-          <TabsTrigger value='upcoming'>Upcoming</TabsTrigger>
-          <TabsTrigger value='completed'>Completed</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value='active' className='space-y-6'>
-          {filterRounds('upcoming').map((round) => (
-            <RoundCard key={round.id} round={round} />
-          ))}
-        </TabsContent>
-
-        <TabsContent value='upcoming' className='space-y-6'>
-          {filterRounds('upcoming').map((round) => (
-            <RoundCard key={round.id} round={round} />
-          ))}
-        </TabsContent>
-
-        <TabsContent value='completed' className='space-y-6'>
-          {filterRounds('completed').map((round) => (
-            <RoundCard key={round.id} round={round} />
-          ))}
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
