@@ -158,7 +158,7 @@ export default function CompetitionRounds() {
       </div>
 
       <Tabs defaultValue='active' className='space-y-6'>
-        <TabsList className='grid w-full max-w-md grid-cols-3'>
+        <TabsList className='grid w-full grid-cols-3'>
           <TabsTrigger value='active'>Active</TabsTrigger>
           <TabsTrigger value='upcoming'>Upcoming</TabsTrigger>
           <TabsTrigger value='completed'>Completed</TabsTrigger>
