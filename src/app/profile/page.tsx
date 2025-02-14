@@ -3,25 +3,32 @@ import React, { useState, useEffect } from 'react';
 import { ContestantService } from '@/services/Services';
 import type { User, Contestant, Performance } from '@/types/types';
 import { PerformanceService } from '@/services/Services';
+import { useAuth } from '@/hooks/auth-context';
 
-interface Props {
-  user: User;
-}
-
-export const ContestantProfileManager: React.FC<Props> = ({ user }) => {
+export const ContestantProfileManager: React.FC = () => {
   const [contestant, setContestant] = useState<Contestant | null>(null);
   const [performances, setPerformances] = useState<Performance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const { userProfile } = useAuth();
   useEffect(() => {
-    loadContestantData();
-  }, [user.id]);
+    if (userProfile) {
+      loadContestantData();
+    }
+  }, [userProfile?.id]);
 
   const loadContestantData = async () => {
     try {
+      if (!userProfile) {
+        console.log('No user profile found');
+        return;
+      }
       setLoading(true);
-      const contestantData = await ContestantService.getContestant(user.id);
+      console.log(userProfile.id);
+      const contestantData = await ContestantService.getContestant(
+        userProfile.id
+      );
+
       if (contestantData) {
         setContestant(contestantData);
         // Load contestant's performances

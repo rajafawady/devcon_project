@@ -4,10 +4,10 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { initializeFirebase, getFirebaseAuth } from '@/lib/firebase/config';
 import { AuthService } from '@/services/AuthService';
-
+import { User as UserProfile } from '@/types/types';
 type AuthContextType = {
   user: User | null;
-  userProfile: any | null;
+  userProfile: UserProfile | null;
   loading: boolean;
 };
 
