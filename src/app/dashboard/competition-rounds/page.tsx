@@ -165,7 +165,7 @@ export default function CompetitionRounds() {
         </TabsList>
 
         <TabsContent value='active' className='space-y-6'>
-          {filterRounds('active').map((round) => (
+          {filterRounds('upcoming').map((round) => (
             <RoundCard key={round.id} round={round} />
           ))}
         </TabsContent>
