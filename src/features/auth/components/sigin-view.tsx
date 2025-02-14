@@ -89,8 +89,9 @@ export default function SignIn() {
       {/* Dark Overlay */}
       <div className='absolute inset-0 bg-black/50'></div>
       <div className='w-[400px]'>
-        <Form />
+        <Form onSubmit={handleSubmit(onSubmit)} />
       </div>
+      {/* Dark Overlay */}
 
       {/* Login Card */}
       {/* <Card className='relative z-10 w-full max-w-md bg-white/90 shadow-lg backdrop-blur-lg'>
