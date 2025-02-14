@@ -41,7 +41,6 @@ export default function PerformanceSubmission() {
   const searchParams = useSearchParams();
   const contestantId = searchParams.get('contestantId');
   const roundId = searchParams.get('roundId');
-  const slotId = searchParams.get('slotId');
 
   const [formData, setFormData] = useState({
     songTitle: '',
@@ -96,8 +95,7 @@ export default function PerformanceSubmission() {
       !formData.songTitle.trim() ||
       !formData.artist.trim() ||
       !contestantId ||
-      !roundId ||
-      !slotId
+      !roundId
     ) {
       setError('Please provide all required information');
       return;
@@ -110,7 +108,7 @@ export default function PerformanceSubmission() {
       const performanceData = {
         contestantId,
         roundId,
-        slotId,
+        slotId: '123',
         mediaType: formData.mediaType,
         songTitle: formData.songTitle.trim(),
         artist: formData.artist.trim()
