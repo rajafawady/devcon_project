@@ -25,7 +25,7 @@ export default function Component({ onSubmit }: any) {
     try {
       const res = await AuthService.signInWithEmail(email, password);
       console.log('Login Response:', res);
-      toast.success('Signup successful!');
+      toast.success('Signin successful!');
       router.push('/dashboard');
     } catch (error) {
       console.error(error);
