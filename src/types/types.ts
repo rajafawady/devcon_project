@@ -3,7 +3,7 @@ export interface User {
   email: string;
   displayName: string;
   photoURL?: string;
-  role: 'contestant' | 'judge' | 'admin';
+  role: 'contestant' | 'judge' | 'user';
   createdAt: Date;
   lastLogin: Date;
 }

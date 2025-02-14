@@ -11,6 +11,7 @@ import {
 import { getFirebaseAuth } from '@/lib/firebase/config';
 import { addDocument } from '@/lib/firebase/db';
 import { User } from '@/types/types';
+import { doc, getDoc } from 'firebase/firestore';
 
 export interface AuthUser {
   uid: string;
@@ -45,7 +46,8 @@ export const AuthService = {
   async signUpWithEmail(
     email: string,
     password: string,
-    displayName: string
+    displayName: string,
+    role = 'contestant' as any
   ): Promise<User> {
     const auth = getFirebaseAuth();
 
@@ -65,7 +67,7 @@ export const AuthService = {
       email,
       displayName,
       photoURL: result.user.photoURL || '',
-      role: 'contestant', // Default role
+      role,
       createdAt: new Date(),
       lastLogin: new Date()
     };

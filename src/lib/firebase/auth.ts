@@ -6,8 +6,10 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   signInWithPopup,
+  getAuth,
   type User
 } from 'firebase/auth';
+import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirebaseAuth } from './config';
 
 export async function loginWithEmail(
