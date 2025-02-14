@@ -5,11 +5,12 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  type UserCredential,
-  type User
+  updateProfile,
+  type UserCredential
 } from 'firebase/auth';
 import { getFirebaseAuth } from '@/lib/firebase/config';
 import { addDocument } from '@/lib/firebase/db';
+import { User } from '@/types/types';
 
 export interface AuthUser {
   uid: string;
@@ -45,37 +46,39 @@ export const AuthService = {
     email: string,
     password: string,
     displayName: string
-  ): Promise<AuthUser> {
+  ): Promise<User> {
     const auth = getFirebaseAuth();
-    const result = await createUserWithEmailAndPassword(auth, email, password);
 
-    await addDocument(
-      'users',
-      {
-        uid: result.user.uid,
-        email,
-        displayName,
-        createdAt: new Date()
-      },
-      result.user.uid
+    // Create user in Firebase Authentication
+    const result: UserCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
     );
 
-    return this.handleAuthResult(result, 'password');
+    // Update the Firebase user's display name
+    await updateProfile(result.user, { displayName });
+
+    // Prepare user data
+    const userData: User = {
+      id: result.user.uid,
+      email,
+      displayName,
+      photoURL: result.user.photoURL || '',
+      role: 'contestant', // Default role
+      createdAt: new Date(),
+      lastLogin: new Date()
+    };
+
+    // Save user data to Firestore
+    await addDocument('users', userData, result.user.uid);
+
+    return userData;
   },
 
   async signOut(): Promise<void> {
     const auth = getFirebaseAuth();
     await signOut(auth);
-  },
-
-  getCurrentUser(): User | null {
-    const auth = getFirebaseAuth();
-    return auth.currentUser;
-  },
-
-  onAuthStateChanged(callback: (user: User | null) => void): () => void {
-    const auth = getFirebaseAuth();
-    return auth.onAuthStateChanged(callback);
   },
 
   async handleAuthResult(
