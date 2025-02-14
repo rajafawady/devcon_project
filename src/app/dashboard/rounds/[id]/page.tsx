@@ -10,26 +10,46 @@ import {
   Info,
   Lock
 } from 'lucide-react';
+import { PerformanceService } from '@/services/Services';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+
+interface Performance {
+  id: string;
+  contestantId: string;
+  roundId: string;
+  slotId: string;
+  mediaUrl: string;
+  mediaType: 'audio' | 'video';
+  songTitle: string;
+  artist: string;
+  status: 'pending_review' | 'approved' | 'rejected' | 'scored';
+  submittedAt: Date;
+  notes?: string;
+}
 
 const VotingInterface = () => {
-  // Simulated user authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userPhone, setUserPhone] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
-  const [showVerification, setShowVerification] = useState(false);
+  const { id } = useParams();
 
   // Competition state
-  const [votingOpen, setVotingOpen] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(3600); // 1 hour in seconds
   const [showVoteAlert, setShowVoteAlert] = useState({
     show: false,
     message: '',
     type: ''
   });
 
+  const [performances, setPerformances] = useState<Performance[]>([]);
+  useEffect(() => {
+    async function fetchPerformances() {
+      const performances = (await PerformanceService.getRoundPerformances(
+        id as any
+      )) as any;
+      setPerformances(performances);
+    }
+    fetchPerformances();
+  }, []);
   // Contestant data with more detailed information
   const [contestants, setContestants] = useState([
     {
@@ -49,25 +69,6 @@ const VotingInterface = () => {
         age: 23,
         genre: 'Pop',
         previousRounds: ['Audition: 92/100', 'Round 1: 88/100']
-      }
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      song: 'Perfect',
-      votes: 982,
-      hasVoted: false,
-      performance: {
-        thumbnail: '/api/placeholder/320/180',
-        duration: '4:12',
-        uploadDate: '2024-02-14',
-        views: 1876
-      },
-      details: {
-        city: 'San Francisco',
-        age: 25,
-        genre: 'R&B',
-        previousRounds: ['Audition: 89/100', 'Round 1: 91/100']
       }
     }
   ]);
@@ -93,160 +94,11 @@ const VotingInterface = () => {
   }, []);
 
   // Timer countdown
-  useEffect(() => {
-    if (timeRemaining > 0 && votingOpen) {
-      const timer = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev <= 1) {
-            setVotingOpen(false);
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [timeRemaining, votingOpen]);
 
   // Phone verification process
-  const handlePhoneSubmit = () => {
-    if (userPhone.length >= 10) {
-      // Simulate SMS verification code send
-      setShowVerification(true);
-      setShowVoteAlert({
-        show: true,
-        message: 'Verification code sent to your phone!',
-        type: 'info'
-      });
-      setTimeout(
-        () => setShowVoteAlert({ show: false, message: '', type: '' }),
-        3000
-      );
-    }
-  };
-
-  const handleVerificationSubmit = () => {
-    if (verificationCode.length === 6) {
-      setIsAuthenticated(true);
-      setShowVerification(false);
-      setShowVoteAlert({
-        show: true,
-        message: 'Phone verified successfully! You can now vote.',
-        type: 'success'
-      });
-      setTimeout(
-        () => setShowVoteAlert({ show: false, message: '', type: '' }),
-        3000
-      );
-    }
-  };
-
-  const handleVote = (contestantId: number) => {
-    if (!isAuthenticated) {
-      setShowVoteAlert({
-        show: true,
-        message: 'Please verify your phone number to vote',
-        type: 'warning'
-      });
-      return;
-    }
-
-    if (!votingOpen) {
-      setShowVoteAlert({
-        show: true,
-        message: 'Voting is now closed',
-        type: 'error'
-      });
-      return;
-    }
-
-    setContestants(
-      contestants.map((contestant) => {
-        if (contestant.id === contestantId && !contestant.hasVoted) {
-          // Record vote in history
-          setVoteHistory(
-            (
-              prev: {
-                contestantId: number;
-                contestantName: string;
-                timestamp: string;
-              }[]
-            ) => [
-              ...prev,
-              {
-                contestantId,
-                contestantName: contestant.name,
-                timestamp: new Date().toISOString()
-              }
-            ]
-          );
-
-          return {
-            ...contestant,
-            votes: contestant.votes + 1,
-            hasVoted: true
-          };
-        }
-        return contestant;
-      })
-    );
-
-    setShowVoteAlert({
-      show: true,
-      message: 'Thank you for voting! Your vote has been recorded.',
-      type: 'success'
-    });
-    setTimeout(
-      () => setShowVoteAlert({ show: false, message: '', type: '' }),
-      3000
-    );
-  };
 
   return (
     <div className='mx-auto max-w-4xl space-y-6 p-4'>
-      {/* Phone Verification Modal */}
-      {showVerification && !isAuthenticated && (
-        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
-          <div className='w-full max-w-md rounded-lg bg-white p-6'>
-            <h3 className='mb-4 text-xl font-bold'>Phone Verification</h3>
-            {!showVerification ? (
-              <div className='space-y-4'>
-                <input
-                  type='tel'
-                  placeholder='Enter phone number'
-                  value={userPhone}
-                  onChange={(e) => setUserPhone(e.target.value)}
-                  className='w-full rounded border p-2'
-                />
-                <button
-                  onClick={handlePhoneSubmit}
-                  className='w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600'
-                >
-                  Send Code
-                </button>
-              </div>
-            ) : (
-              <div className='space-y-4'>
-                <input
-                  type='text'
-                  placeholder='Enter verification code'
-                  value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value)}
-                  className='w-full rounded border p-2'
-                />
-                <button
-                  onClick={handleVerificationSubmit}
-                  className='w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600'
-                >
-                  Verify Code
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Alert Messages */}
       {showVoteAlert.show && (
         <Alert
@@ -278,6 +130,56 @@ const VotingInterface = () => {
 
       {/* Contestants Grid */}
       <div className='grid gap-6'>
+        {performances.map((performance) => (
+          <Card key={performance.id} className='overflow-hidden'>
+            <div className='grid gap-4 md:grid-cols-3'>
+              <div className='relative'>
+                <img
+                  src={performance.mediaUrl}
+                  alt={`${performance.artist}'s performance`}
+                  className='h-full w-full object-cover'
+                />
+
+                <PlayCircle className='absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 transform cursor-pointer text-white opacity-75 hover:opacity-100' />
+              </div>
+
+              <div className='p-4 md:col-span-2'>
+                <CardHeader className='p-0'>
+                  <div className='flex items-start justify-between'>
+                    <div>
+                      <CardTitle className='text-xl font-bold'>
+                        {performance.artist}
+                      </CardTitle>
+                      <p className='text-gray-600'>{performance.songTitle}</p>
+                      <p className='text-sm text-gray-500'>
+                        {performance.artist} • {performance.songTitle}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowVoteHistory(true)}
+                      className='text-blue-500 hover:text-blue-600'
+                    >
+                      <Info size={20} />
+                    </button>
+                  </div>
+                </CardHeader>
+
+                <CardContent className='mt-4 p-0'>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center'>
+                      <div className='mr-4 flex items-center text-yellow-500'>
+                        <Trophy size={24} />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* <div className='grid gap-6'>
         {contestants.map((contestant) => (
           <Card key={contestant.id} className='overflow-hidden'>
             <div className='grid gap-4 md:grid-cols-3'>
@@ -317,37 +219,6 @@ const VotingInterface = () => {
 
                 <CardContent className='mt-4 p-0'>
                   <div className='flex items-center justify-between'>
-                    <div className='flex items-center space-x-4'>
-                      <button
-                        onClick={() => handleVote(contestant.id)}
-                        disabled={
-                          contestant.hasVoted || !votingOpen || !isAuthenticated
-                        }
-                        className={`flex items-center space-x-2 rounded-full px-4 py-2 ${
-                          !votingOpen
-                            ? 'bg-gray-100 text-gray-500'
-                            : contestant.hasVoted
-                              ? 'bg-green-100 text-green-500'
-                              : !isAuthenticated
-                                ? 'bg-gray-100 text-gray-500'
-                                : 'bg-red-50 text-red-500 hover:bg-red-100'
-                        }`}
-                      >
-                        <span className='font-medium'>
-                          {contestant.votes.toLocaleString()}
-                        </span>
-                      </button>
-
-                      <button className='flex items-center space-x-2 rounded-full bg-blue-50 px-4 py-2 text-blue-500 hover:bg-blue-100'>
-                        <Link
-                          className='font-medium'
-                          href={'/dashboard/judge-scoring/' + contestant.id}
-                        >
-                          Rate
-                        </Link>
-                      </button>
-                    </div>
-
                     <div className='flex items-center'>
                       <div className='mr-4 flex items-center text-yellow-500'>
                         <Trophy size={24} />
@@ -368,7 +239,7 @@ const VotingInterface = () => {
             </div>
           </Card>
         ))}
-      </div>
+      </div> */}
 
       {/* Vote History Modal */}
       {showVoteHistory && (
